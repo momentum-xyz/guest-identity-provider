@@ -18,6 +18,10 @@ jobs:
         with:
           go-version: '1.18'
           check-latest: true
+      - id: go-fixup
+        # Workaround for setup-go on self-hosted runner, without a $HOME
+        name: Go fixup
+        run: echo "GOMODCACHE=/opt/go-mod-cache" >> $GITHUB_ENV
       - id: go-test
         name: Go tests
         run: go test -coverprofile=output/coverage.out ./...
