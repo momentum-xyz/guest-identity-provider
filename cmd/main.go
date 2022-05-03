@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/OdysseyMomentumExperience/web3-identity-provider/pkg/config"
-	"github.com/OdysseyMomentumExperience/web3-identity-provider/pkg/handler"
-	"github.com/OdysseyMomentumExperience/web3-identity-provider/pkg/hydra"
+	"github.com/OdysseyMomentumExperience/guest-identity-provider/pkg/config"
+	"github.com/OdysseyMomentumExperience/guest-identity-provider/pkg/handler"
+	"github.com/OdysseyMomentumExperience/guest-identity-provider/pkg/hydra"
 	"gopkg.in/yaml.v2"
 )
 

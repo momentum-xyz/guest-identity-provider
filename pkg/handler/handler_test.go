@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/OdysseyMomentumExperience/web3-identity-provider/pkg/hydra"
+	"github.com/OdysseyMomentumExperience/guest-identity-provider/pkg/hydra"
 	"github.com/kinbiko/jsonassert"
 )
 

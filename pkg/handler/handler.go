@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/OdysseyMomentumExperience/web3-identity-provider/pkg/hydra"
+	"github.com/OdysseyMomentumExperience/guest-identity-provider/pkg/hydra"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/render"
 	"github.com/google/uuid"
