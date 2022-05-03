@@ -1,0 +1,3 @@
+host: "guest-idp.localhost"
+port: 4000
+adminURL: "hydra-admin.localhost:4445"
