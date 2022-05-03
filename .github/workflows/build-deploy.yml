@@ -24,7 +24,9 @@ jobs:
         run: echo "GOMODCACHE=/opt/go-mod-cache" >> $GITHUB_ENV
       - id: go-test
         name: Go tests
-        run: go test -coverprofile=output/coverage.out ./...
+        run: |
+          mkdir -p output
+          go test -coverprofile=output/coverage.out ./...
   build:
     needs: test
     runs-on: self-hosted  # ubuntu-latest
