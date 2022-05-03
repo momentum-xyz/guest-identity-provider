@@ -78,7 +78,8 @@ async def oidc_auth(
             redirect_uri=redirect_uri,
         )
         authorization_url, state = oidc_client.create_authorization_url(
-            authorization_endpoint
+            authorization_endpoint,
+            audience="react-client",
         )
         print(f"{authorization_url=}")
         print(f"{state=}")
@@ -143,12 +144,19 @@ async def oidc_auth(
             token_endpoint, authorization_response=callback_url
         )
         access_token = token["access_token"]
+        id_token = token["id_token"]
         # print(f'{access_token=}')
         access_token_decoded = jwt.decode(
             access_token, options={"verify_signature": False}
         )
         print("Decoded access_token:")
         pprint(access_token_decoded)
+
+        id_token_decoded = jwt.decode(
+            id_token, options={"verify_signature": False}
+        )
+        print("Decoded id_token:")
+        pprint(id_token_decoded)
 
 
 async def get_oidc_discovery():

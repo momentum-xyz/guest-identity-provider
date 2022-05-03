@@ -95,6 +95,14 @@ func (h *HydraClient) AcceptConsent(ctx context.Context, challenge string, audie
 	request.SetRememberFor(0) // And here it means forever
 	request.SetGrantAccessTokenAudience(audience)
 	request.SetGrantScope(scope)
+	session := client.NewConsentRequestSession()
+	// Broken type: https://github.com/ory/hydra/issues/3058
+	var extraProps = map[string]map[string]interface{}{"guest": {"1": true}}
+	// So for now, just give it some 'thruthy' value :/
+	session.SetIdToken(
+		extraProps,
+	)
+	request.SetSession(*session)
 	result, _, err := h.client.AdminApi.AcceptConsentRequest(ctx).ConsentChallenge(challenge).AcceptConsentRequest(*request).Execute()
 	if err != nil {
 		return nil, err
