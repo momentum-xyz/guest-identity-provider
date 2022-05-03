@@ -21,7 +21,9 @@ jobs:
       - id: go-fixup
         # Workaround for setup-go on self-hosted runner, without a $HOME
         name: Go fixup
-        run: echo "GOMODCACHE=/opt/go-mod-cache" >> $GITHUB_ENV
+        run:|
+          echo "GOMODCACHE=/opt/go-cache/mod" >> $GITHUB_ENV
+          echo "GOCACHE=/opt/go-cache/build" >> $GITHUB_ENV
       - id: go-test
         name: Go tests
         run: |
