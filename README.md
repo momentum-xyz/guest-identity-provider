@@ -45,6 +45,16 @@ And/or using a YAML config file, see `config.example.yaml`.
 The `guest-identity-provider` executable does not accept any arguments. It will just start listening on the configured host and port.
 
 
+## Usage
+
+HTTP API endpoints:
+
+| path | Description | input | output |
+| --- | --- | --- | --- |
+| `/v0/guest/login`   | Accept login | `{"challenge": "..."}` | `{"redirect": "https://..."}`
+| `/v0/guest/consent` | Accept consent | `{"challenge": "..."}` | `{"redirect": "https://..."}`
+
+
 ## Testing
 
 Project has some basic golang tests.
