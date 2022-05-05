@@ -26,12 +26,15 @@ import jwt
 import trio
 from authlib.integrations.httpx_client import AsyncOAuth2Client
 
-OIDC_CLIENT = os.environ.get("OIDC_CLIENT", "f2f9cd70-fdd9-4e88-aba3-aff68357759e")
+OIDC_CLIENT = os.environ.get("OIDC_CLIENT", "93f4f607-a56d-4689-947a-0529630167ad")
 OIDC_SECRET = None
-OIDC_SERVER = "oidc.localhost"
-OIDC_URL = f"http://{OIDC_SERVER}"
+#OIDC_SERVER = "oidc.localhost"
+OIDC_SERVER = "oidc.dev.odyssey.ninja"
+OIDC_URL = f"https://{OIDC_SERVER}"
 OIDC_DISCO_PATH = "/.well-known/openid-configuration"
 OIDC_DISCOVERY = f"{OIDC_URL}{OIDC_DISCO_PATH}"
+
+GUEST_IDP_URL = "https://dev.odyssey.ninja/guest-idp"
 
 REDIRECT_URI = "http://localhost:3000/oidc/guest/callback"
 
@@ -48,6 +51,7 @@ async def main():
     print(f'{oidc_disco["scopes_supported"]=}')
     print()
     scope = "openid"
+    print(f"{OIDC_CLIENT=}")
     await oidc_auth(
         OIDC_CLIENT,
         OIDC_SECRET,
@@ -99,7 +103,7 @@ async def oidc_auth(
 
         print("Login app send challenge to idp service")
         r = user_client.post(
-            "http://guest-idp.localhost:4000/v0/guest/login",
+            f"{GUEST_IDP_URL}/v0/guest/login",
             json={"challenge": login_challenge},
         )
         assert r.status_code == 200
@@ -123,7 +127,7 @@ async def oidc_auth(
 
         print("Login app send challenge to idp service")
         r = user_client.post(
-            "http://guest-idp.localhost:4000/v0/guest/consent",
+            f"{GUEST_IDP_URL}/v0/guest/consent",
             json={"challenge": consent_challenge},
         )
         assert r.status_code == 200
@@ -145,13 +149,14 @@ async def oidc_auth(
         )
         access_token = token["access_token"]
         id_token = token["id_token"]
-        # print(f'{access_token=}')
+        print(f'{access_token=}')
         access_token_decoded = jwt.decode(
             access_token, options={"verify_signature": False}
         )
         print("Decoded access_token:")
         pprint(access_token_decoded)
 
+        print(f'{id_token=}')
         id_token_decoded = jwt.decode(
             id_token, options={"verify_signature": False}
         )
@@ -166,6 +171,7 @@ async def get_oidc_discovery():
             return cached_content
     except FileNotFoundError as e:
         async with httpx.AsyncClient(http2=True) as client:
+            print(f'{OIDC_DISCOVERY=}')
             http_response = await client.get(OIDC_DISCOVERY)
             response = http_response.json()
         async with await trio.open_file(_TMP_OIDC, "w", encoding="utf-8") as f:
