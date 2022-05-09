@@ -48,10 +48,42 @@ func NewHandler(hydraClient *hydra.HydraClient) http.Handler {
 		w.Write([]byte("OK"))
 	})
 
+	router.Get("/v0/guest/login", getLoginHandler)
 	router.Post("/v0/guest/login", loginHandler)
 	router.Post("/v0/guest/consent", consentHandler)
 
 	return router
+}
+
+// Get info about a login session for the Authorization Server.
+func getLoginHandler(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	challenge := query.Get("challenge")
+	if challenge == "" {
+		err := &ErrResponse{
+			HTTPStatusCode: 400,
+			ErrorText:      "invalid",
+			MessageText:    "Missing required challenge query parameter.",
+		}
+		render.Render(w, r, err)
+		return
+	}
+	client := getHydraClient(r)
+	ctx := r.Context()
+	loginRequest, err := client.GetLoginRequest(ctx, challenge)
+	if err != nil {
+		render.Render(w, r, ErrInvalidRequest(err))
+		return
+	}
+	oidcContext := loginRequest.GetOidcContext()
+	response := &LoginInfoResponse{
+		Subject:    loginRequest.GetSubject(),
+		RequestURL: loginRequest.GetRequestUrl(),
+		Display:    oidcContext.GetDisplay(),
+		LoginHint:  oidcContext.GetLoginHint(),
+		UILocales:  oidcContext.GetUiLocales(),
+	}
+	render.Render(w, r, response)
 }
 
 // Handle a login for a guest user.
@@ -67,14 +99,15 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	client := getHydraClient(r)
 	ctx := r.Context()
 	// If we have a subject, it is an 'active' session
-	subject, err := client.GetLoginRequest(ctx, data.Challenge)
+	loginRequest, err := client.GetLoginRequest(ctx, data.Challenge)
 	if err != nil {
 		render.Render(w, r, ErrInvalidRequest(err))
 		return
 	}
 	var userId string
-	if subject != nil && *subject != "" {
-		userId = *subject
+	subject := loginRequest.GetSubject()
+	if subject != "" {
+		userId = subject
 	} else {
 		userId = uuid.NewString() // Guest user, just give them a new ID
 	}

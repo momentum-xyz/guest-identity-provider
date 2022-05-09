@@ -44,13 +44,12 @@ func (h *HydraClient) GetStatus(ctx context.Context) (*string, error) {
 }
 
 // Get login request subject, if user session was still active.
-func (h *HydraClient) GetLoginRequest(ctx context.Context, loginChallenge string) (*string, error) {
+func (h *HydraClient) GetLoginRequest(ctx context.Context, loginChallenge string) (*client.LoginRequest, error) {
 	result, _, err := h.client.AdminApi.GetLoginRequest(ctx).LoginChallenge(loginChallenge).Execute()
 	if err != nil {
 		return nil, err
 	}
-	subject := result.GetSubject()
-	return &subject, nil
+	return result, nil
 }
 
 // Accept login request and return URL to redirect the user to.

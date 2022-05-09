@@ -26,6 +26,19 @@ func (rr *RedirectResponse) Render(w http.ResponseWriter, r *http.Request) error
 	return nil
 }
 
+// Response for getting login information.
+type LoginInfoResponse struct {
+	Subject    string   `json:"subject,omitempty"`
+	RequestURL string   `json:"requestURL"`
+	Display    string   `json:"display,omitempty"`
+	LoginHint  string   `json:"loginHint,omitempty"`
+	UILocales  []string `json:"uiLocales,omitempty"`
+}
+
+func (l *LoginInfoResponse) Render(w http.ResponseWriter, r *http.Request) error {
+	return nil
+}
+
 type ErrResponse struct {
 	Err            error `json:"-"`
 	HTTPStatusCode int   `json:"-"`

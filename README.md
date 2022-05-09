@@ -49,10 +49,11 @@ The `guest-identity-provider` executable does not accept any arguments. It will 
 
 HTTP API endpoints:
 
-| path | Description | input | output |
-| --- | --- | --- | --- |
-| `/v0/guest/login`   | Accept login | `{"challenge": "..."}` | `{"redirect": "https://..."}`
-| `/v0/guest/consent` | Accept consent | `{"challenge": "..."}` | `{"redirect": "https://..."}`
+|Method | path | Description | input | output |
+| --- | --- | --- | --- | --- |
+|GET | `/v0/guest/login`   | Get login session info | `?challenge=…` | `{"subject": "…", "requestURL: "…", "display": "…", "loginHint": "…", "uiLocales": […]}` "
+|POST | `/v0/guest/login`   | Accept login | `{"challenge": "…"}` | `{"redirect": "https://…"}`
+|POST | `/v0/guest/consent` | Accept consent | `{"challenge": "…"}` | `{"redirect": "https://…"}`
 
 
 ## Testing

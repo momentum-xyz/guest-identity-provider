@@ -49,10 +49,24 @@ func TestNewHandler(t *testing.T) {
 			expectedData:   "OIDC ok\nOK",
 		},
 		{
-			name:           "Login endpoint GET",
+			name:           "Login endpoint GET, no query params",
 			path:           "/v0/guest/login",
 			method:         http.MethodGet,
-			expectedStatus: http.StatusMethodNotAllowed,
+			expectedStatus: http.StatusBadRequest,
+			expectedData:   `{"error": "invalid", "message": "<<PRESENCE>>"}`,
+		},
+		{
+			name:           "Login endpoint GET",
+			path:           "/v0/guest/login?challenge=foobar",
+			method:         http.MethodGet,
+			expectedStatus: http.StatusOK,
+			expectedData: `{
+			"subject": "<<PRESENCE>>",
+			"requestURL": "<<PRESENCE>>",
+			"display": "<<PRESENCE>>",
+			"loginHint": "<<PRESENCE>>",
+			"uiLocales": "<<PRESENCE>>"
+		    }`,
 		},
 		{
 			name:           "Login endpoint POST invalid input",
@@ -69,6 +83,12 @@ func TestNewHandler(t *testing.T) {
 			body:           bytes.NewBufferString(`{"challenge": "foobar"}`),
 			expectedStatus: http.StatusOK,
 			expectedData:   `{"redirect": "<<PRESENCE>>"}`,
+		},
+		{
+			name:           "Consent endpoint GET",
+			path:           "/v0/guest/consent",
+			method:         http.MethodGet,
+			expectedStatus: http.StatusMethodNotAllowed,
 		},
 		{
 			name:           "Consent endpoint POST",
@@ -164,7 +184,23 @@ func setupMockRequest(t *testing.T, subtest *SubTest) *http.Request {
 
 func mockHydraLoginRequest(t *testing.T, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", jsonContentType)
-	w.Write([]byte(`{}`))
+	w.Write([]byte(`{
+	    "challenge": "foobar",
+	    "client": {},
+	    "oidc_context": {
+	      "acr_values": [],
+	      "display": "page",
+	      "id_token_hint_claims": {},
+	      "login_hint": "barbaz",
+	      "ui_locales": ["fr-CA", "fr", "en"]
+	    },
+	    "request_url": "http://example.com",
+	    "requested_access_token_audience": [],
+	    "requested_scope": [],
+	    "session_id": "",
+	    "skip": false,
+	    "subject": "subject"
+	}`))
 }
 
 func mockHydraLoginAccept(t *testing.T, w http.ResponseWriter, r *http.Request) {
