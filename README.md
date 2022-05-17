@@ -53,6 +53,7 @@ HTTP API endpoints:
 | --- | --- | --- | --- | --- |
 |GET | `/v0/guest/login`   | Get login session info | `?challenge=…` | `{"subject": "…", "requestURL: "…", "display": "…", "loginHint": "…", "uiLocales": […]}` "
 |POST | `/v0/guest/login`   | Accept login | `{"challenge": "…"}` | `{"redirect": "https://…"}`
+|GET | `/v0/guest/consent`   | Get consent session info | `?challenge=…` | `{"subject": "…", "requestURL: "…", "display": "…", "loginHint": "…", "uiLocales": […]}` "
 |POST | `/v0/guest/consent` | Accept consent | `{"challenge": "…"}` | `{"redirect": "https://…"}`
 
 
