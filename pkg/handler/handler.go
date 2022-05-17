@@ -50,6 +50,7 @@ func NewHandler(hydraClient *hydra.HydraClient) http.Handler {
 
 	router.Get("/v0/guest/login", getLoginHandler)
 	router.Post("/v0/guest/login", loginHandler)
+	router.Get("/v0/guest/consent", getConsentHandler)
 	router.Post("/v0/guest/consent", consentHandler)
 
 	return router
@@ -79,6 +80,37 @@ func getLoginHandler(w http.ResponseWriter, r *http.Request) {
 	response := &LoginInfoResponse{
 		Subject:    loginRequest.GetSubject(),
 		RequestURL: loginRequest.GetRequestUrl(),
+		Display:    oidcContext.GetDisplay(),
+		LoginHint:  oidcContext.GetLoginHint(),
+		UILocales:  oidcContext.GetUiLocales(),
+	}
+	render.Render(w, r, response)
+}
+
+// Get info about a consent session for the Authorization Server.
+func getConsentHandler(w http.ResponseWriter, r *http.Request) {
+	query := r.URL.Query()
+	challenge := query.Get("challenge")
+	if challenge == "" {
+		err := &ErrResponse{
+			HTTPStatusCode: 400,
+			ErrorText:      "invalid",
+			MessageText:    "Missing required challenge query parameter.",
+		}
+		render.Render(w, r, err)
+		return
+	}
+	client := getHydraClient(r)
+	ctx := r.Context()
+	consentRequest, err := client.GetConsent(ctx, challenge)
+	if err != nil {
+		render.Render(w, r, ErrInvalidRequest(err))
+		return
+	}
+	oidcContext := consentRequest.GetOidcContext()
+	response := &LoginInfoResponse{
+		Subject:    consentRequest.GetSubject(),
+		RequestURL: consentRequest.GetRequestUrl(),
 		Display:    oidcContext.GetDisplay(),
 		LoginHint:  oidcContext.GetLoginHint(),
 		UILocales:  oidcContext.GetUiLocales(),
@@ -135,11 +167,13 @@ func consentHandler(w http.ResponseWriter, r *http.Request) {
 
 	client := getHydraClient(r)
 	ctx := r.Context()
-	audience, scope, err := client.GetConsent(ctx, data.Challenge)
+	consentRequest, err := client.GetConsent(ctx, data.Challenge)
 	if err != nil {
 		render.Render(w, r, ErrInvalidRequest(err))
 		return
 	}
+	audience := consentRequest.GetRequestedAccessTokenAudience()
+	scope := consentRequest.GetRequestedScope()
 	redirectTo, err := client.AcceptConsent(ctx, data.Challenge, audience, scope)
 	if err != nil {
 		render.Render(w, r, ErrInvalidRequest(err))
