@@ -35,6 +35,7 @@ OIDC_DISCO_PATH = "/.well-known/openid-configuration"
 OIDC_DISCOVERY = f"{OIDC_URL}{OIDC_DISCO_PATH}"
 
 GUEST_IDP_URL = "https://dev.odyssey.ninja/guest-idp"
+#GUEST_IDP_URL = "http://localhost:4000/guest-idp"
 
 REDIRECT_URI = "http://localhost:3000/oidc/guest/callback"
 
@@ -80,6 +81,7 @@ async def oidc_auth(
             client_secret=client_secret,
             scope=scope,
             redirect_uri=redirect_uri,
+            login_hint='foo',
         )
         authorization_url, state = oidc_client.create_authorization_url(
             authorization_endpoint,
@@ -100,6 +102,14 @@ async def oidc_auth(
         print("Login app app gets login challenge")
         login_challenge = parse_qs(urlparse(login_url).query).get("login_challenge")[0]
         print(f"{login_challenge=}")
+
+        print("Login app can get session details")
+        r = user_client.get(
+            f"{GUEST_IDP_URL}/v0/guest/login?challenge={login_challenge}",
+        )
+        assert r.status_code == 200
+        login_hint = r.json()["loginHint"]
+        print(f"{login_hint=}")
 
         print("Login app send challenge to idp service")
         r = user_client.post(
@@ -124,6 +134,14 @@ async def oidc_auth(
             "consent_challenge"
         )[0]
         print(f"{consent_challenge}")
+
+        print("Login app can get session details")
+        r = user_client.get(
+            f"{GUEST_IDP_URL}/v0/guest/consent?challenge={consent_challenge}",
+        )
+        assert r.status_code == 200
+        login_hint = r.json()["loginHint"]
+        print(f"{login_hint=}")
 
         print("Login app send challenge to idp service")
         r = user_client.post(
