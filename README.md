@@ -6,7 +6,7 @@ login and consent for use by guest logins.
 Guest login, so don't expect security :)
 It is up to the backend to use these access token with appropriate authorization.
 
-Loosely based on [web3-identity-provider](https://github.com/OdysseyMomentumExperience/web3-identity-provider)
+Loosely based on [web3-identity-provider](https://github.com/momentum-xyz/web3-identity-provider)
 
 
 ## Building
@@ -15,7 +15,7 @@ Loosely based on [web3-identity-provider](https://github.com/OdysseyMomentumExpe
 make clean build
 ```
 
-Executable in place in `output/guest-identity-provider`.
+Executable is placed in `output/guest-identity-provider`.
 
 Or build as container image:
 
@@ -24,7 +24,7 @@ make clean container-image
 ```
 
 Container image is then in your docker registry as `guest-identity-provider:develop`
-and as exported file in `output/container.img.tar`
+and as exported file in `output/container.img.tar`.
 
 
 ## Running
