@@ -71,20 +71,22 @@ func (h *HydraClient) AcceptLogin(ctx context.Context, challenge string, subject
 }
 
 // Return the requested audience and scope for the concent request
-func (h *HydraClient) GetConsent(ctx context.Context, challenge string) ([]string, []string, error) {
+func (h *HydraClient) GetConsent(ctx context.Context, challenge string) (*client.ConsentRequest, error) {
 	result, _, err := h.client.AdminApi.GetConsentRequest(ctx).ConsentChallenge(challenge).Execute()
 	if err != nil {
-		return nil, nil, err
+		return nil, err
 	}
-	audience, isSet := result.GetRequestedAccessTokenAudienceOk()
-	if !isSet {
-		return nil, nil, errors.New("no audience requested")
-	}
-	scope, isSet := result.GetRequestedScopeOk()
-	if !isSet {
-		return nil, nil, errors.New("no scope requested")
-	}
-	return audience, scope, nil
+	return result, nil
+	/*
+		audience, isSet := result.GetRequestedAccessTokenAudienceOk()
+		if !isSet {
+			return nil, nil, errors.New("no audience requested")
+		}
+		scope, isSet := result.GetRequestedScopeOk()
+		if !isSet {
+			return nil, nil, errors.New("no scope requested")
+		}
+		return audience, scope, nil */
 }
 
 func (h *HydraClient) AcceptConsent(ctx context.Context, challenge string, audience []string, scope []string) (*string, error) {

@@ -86,9 +86,16 @@ func TestNewHandler(t *testing.T) {
 		},
 		{
 			name:           "Consent endpoint GET",
-			path:           "/v0/guest/consent",
+			path:           "/v0/guest/consent?challenge=foobar",
 			method:         http.MethodGet,
-			expectedStatus: http.StatusMethodNotAllowed,
+			expectedStatus: http.StatusOK,
+			expectedData: `{
+			"subject": "<<PRESENCE>>",
+			"requestURL": "<<PRESENCE>>",
+			"display": "<<PRESENCE>>",
+			"loginHint": "<<PRESENCE>>",
+			"uiLocales": "<<PRESENCE>>"
+		    }`,
 		},
 		{
 			name:           "Consent endpoint POST",
@@ -211,6 +218,14 @@ func mockHydraLoginAccept(t *testing.T, w http.ResponseWriter, r *http.Request) 
 func mockHydraConsentRequest(t *testing.T, w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", jsonContentType)
 	w.Write([]byte(`{
+	    "subject": "subject",
+	    "oidc_context": {
+	      "acr_values": [],
+	      "display": "page",
+	      "id_token_hint_claims": {},
+	      "login_hint": "barbaz",
+	      "ui_locales": ["fr-CA", "fr", "en"]
+	    },
 	    "requested_access_token_audience" : ["react-client"],
 	    "requested_scope" : ["openid"]
 	}`))
