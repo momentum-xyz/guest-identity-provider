@@ -12,7 +12,7 @@ COPY . ./
 RUN go list -m all
 RUN go build -o ./build/guest-identity-provider ./cmd/main.go
 
-FROM alpine:3.15.4 as runtime
+FROM alpine:3.16.0 as runtime
 
 COPY --from=build /usr/src/code/build/guest-identity-provider /opt/guest-identity-provider
 
