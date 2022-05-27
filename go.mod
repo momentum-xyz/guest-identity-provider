@@ -3,7 +3,7 @@ module github.com/OdysseyMomentumExperience/guest-identity-provider
 go 1.18
 
 require (
-	github.com/go-chi/chi v1.5.4
+	github.com/go-chi/chi v4.1.2+incompatible
 	github.com/go-chi/render v1.0.1
 	github.com/google/uuid v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
