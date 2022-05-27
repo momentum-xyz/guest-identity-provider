@@ -8,7 +8,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/kinbiko/jsonassert v1.1.0
-	github.com/ory/hydra-client-go v1.11.7
+	github.com/ory/hydra-client-go v1.11.8
 	gopkg.in/yaml.v2 v2.4.0
 )
 
